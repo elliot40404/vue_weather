@@ -1,7 +1,7 @@
 <template>
   <div class="con">
     <div class="img">
-      <img src="../assets/sun.png" alt="weather icon" />
+      <img id="icon" :src="img" alt="weather icon" />
     </div>
     <div class="top">
       <header>
@@ -41,13 +41,32 @@
 export default {
   name: "Main",
   data() {
-      return {
-          img: '../assets/sun.png'
-      }
+    return {
+      img: require("../assets/sun.png"),
+    };
   },
-  methods: {},
+  methods: {
+    autoUpdate() {
+      setInterval(() => {
+        this.$store.dispatch("refresh");
+      }, 1000 * 60 * 30);
+    },
+    // TODO: use proper logic to implement icons from store use getters
+    timeWatch() {
+      const time = new Date();
+      if (time.getHours() >= 17 || time.getHours() < 4) {
+        this.img = require("../assets/moon.png")
+      }
+      this.timeAutoWatch();
+    },
+    timeAutoWatch() {
+      setInterval(this.timeWatch, 1000 * 60 * 60);
+    },
+  },
   created() {
-    this.$store.dispatch('refresh');
+    this.$store.dispatch("refresh");
+    this.autoUpdate();
+    this.timeWatch();
   },
 };
 </script>
@@ -55,7 +74,7 @@ export default {
 <style scoped>
 .img {
   position: absolute;
-  width: 100vw;
+  width: clamp(400px, 100vw, 800px);
   height: 50vh;
   display: flex;
   align-items: center;
@@ -63,8 +82,8 @@ export default {
   pointer-events: none;
 }
 .img img {
-    width: 200px;
-    margin: 0px 0px 4em;
+  width: 200px;
+  margin: 0px 0px 4em;
 }
 .con {
   height: 100vh;
