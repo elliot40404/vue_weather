@@ -40,7 +40,7 @@ export default createStore({
         return;
       }
     },
-    time(time) {
+    time(state, time) {
       state.time = time;
     },
   },
