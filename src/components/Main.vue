@@ -1,7 +1,7 @@
 <template>
-  <div class="con">
+  <div :class="[day? 'bgd': 'bgn', 'con']">
     <div class="img">
-      <img id="icon" :src="img" alt="weather icon" />
+      <img id="icon" :src="imgsrc" alt="weather icon" />
     </div>
     <div class="top">
       <header>
@@ -42,8 +42,14 @@ export default {
   name: "Main",
   data() {
     return {
-      img: require("../assets/sun.png"),
+      img: 'sun.png',
+      day: true
     };
+  },
+  computed: {
+    imgsrc() {
+      return require(`../assets/${this.$store.state.img}`);
+    }
   },
   methods: {
     autoUpdate() {
@@ -51,11 +57,11 @@ export default {
         this.$store.dispatch("refresh");
       }, 1000 * 60 * 30);
     },
-    // TODO: use proper logic to implement icons from store use getters
     timeWatch() {
       const time = new Date();
       if (time.getHours() >= 17 || time.getHours() < 4) {
-        this.img = require("../assets/moon.png")
+        this.$store.dispatch('time', 'n');
+        this.day = false
       }
       this.timeAutoWatch();
     },
@@ -72,9 +78,15 @@ export default {
 </script>
 
 <style scoped>
+.bgd {
+  background: linear-gradient(180deg, #0076B1 35.42%, #000000 100%);
+}
+.bgn {
+  background: linear-gradient(180deg, #04202e 48.44%, #01679a 100%);
+}
 .img {
   position: absolute;
-  width: clamp(400px, 100vw, 800px);
+  width: clamp(350px, 100vw, 800px);
   height: 50vh;
   display: flex;
   align-items: center;
@@ -88,7 +100,6 @@ export default {
 .con {
   height: 100vh;
   width: 100vw;
-  background: linear-gradient(180deg, #04202e 48.44%, #01679a 100%);
   display: flex;
   flex-direction: column;
   font-family: "Poppins", sans-serif;
