@@ -42,7 +42,6 @@ export default {
   name: "Main",
   data() {
     return {
-      img: 'sun.png',
       day: true
     };
   },
