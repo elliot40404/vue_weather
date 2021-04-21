@@ -1,15 +1,16 @@
 <template>
-  <div :class="[day? 'bgd': 'bgn', 'con']">
-    <div class="img">
-      <img id="icon" :src="imgsrc" alt="weather icon" />
-    </div>
+  <div :class="[day ? 'bgd' : 'bgn', 'con']">
     <div class="top">
       <header>
         <h1>{{ $store.state.Location }}</h1>
+        <div @click="$store.dispatch('unitC')" class="unit">{{ $store.state.Unit }}</div>
         <div class="material-icons" @click="$store.dispatch('refresh')">
           cached
         </div>
       </header>
+      <div class="img">
+        <img id="icon" :src="imgsrc" alt="weather icon" />
+      </div>
       <div class="temp">
         <h2>{{ $store.state.Temp }}</h2>
         <h3>{{ $store.state.Unit }}</h3>
@@ -22,18 +23,20 @@
         <div class="max">
           <h6>
             {{ $store.state.Max
-            }}<span class="material-icons"> arrow_upward </span>
+            }}{{ $store.state.Unit }}<span class="material-icons"> arrow_upward </span>
           </h6>
         </div>
         <div class="min">
           <h6>
             {{ $store.state.Min
-            }}<span class="material-icons"> arrow_downward </span>
+            }}{{ $store.state.Unit }}<span class="material-icons"> arrow_downward </span>
           </h6>
         </div>
       </div>
+      <div class="feels">
+        <h5>Feels like {{$store.state.Feels}}{{ $store.state.Unit }}</h5>
+      </div>
     </div>
-    <div class="bottom"></div>
   </div>
 </template>
 
@@ -42,13 +45,13 @@ export default {
   name: "Main",
   data() {
     return {
-      day: true
+      day: true,
     };
   },
   computed: {
     imgsrc() {
       return require(`../assets/${this.$store.state.img}`);
-    }
+    },
   },
   methods: {
     autoUpdate() {
@@ -59,8 +62,8 @@ export default {
     timeWatch() {
       const time = new Date();
       if (time.getHours() >= 17 || time.getHours() < 4) {
-        this.$store.dispatch('time', 'n');
-        this.day = false
+        this.$store.dispatch("time", "n");
+        this.day = false;
       }
       this.timeAutoWatch();
     },
@@ -77,20 +80,26 @@ export default {
 </script>
 
 <style scoped>
+.unit {
+  background: rgb(255, 255, 255);
+  color: #ffb703;
+  width: 50px;
+  padding: 2px;
+  font-weight: 500;
+  font-size: 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
 .bgd {
-  background: linear-gradient(180deg, #0076B1 35.42%, #000000 100%);
+  background: linear-gradient(180deg, #0076b1 35.42%, #000000 100%);
 }
 .bgn {
   background: linear-gradient(180deg, #04202e 48.44%, #01679a 100%);
 }
 .img {
-  position: absolute;
-  width: clamp(350px, 100vw, 800px);
-  height: 50vh;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  pointer-events: none;
+  justify-content: center;
 }
 .img img {
   width: 200px;
@@ -105,7 +114,6 @@ export default {
 }
 .top {
   flex: 1;
-  /* background: rgb(202, 18, 18); */
 }
 .top .material-icons {
   color: #ffb703;
@@ -130,7 +138,7 @@ export default {
 }
 .temp {
   display: flex;
-  padding: 5em 1.5em 0;
+  padding: 1em 1.5em 0;
   align-items: baseline;
 }
 .temp h2 {
@@ -154,7 +162,7 @@ export default {
   color: #fb8500;
 }
 .condition h5,
-h6 {
+h6, .feels h5 {
   padding: 0.5em 1.5em;
   text-align: left;
   font-size: 1.4rem;
@@ -171,9 +179,5 @@ h6 {
 .minmax span {
   position: absolute;
   right: 2px;
-}
-.bottom {
-  flex: 1;
-  /* background: rgb(0, 255, 85); */
 }
 </style>

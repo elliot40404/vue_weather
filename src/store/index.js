@@ -9,18 +9,20 @@ export default createStore({
     Min: 30,
     Max: 40,
     Humidity: 30,
-    Feels: 35,
+    Feels: 39,
     img: "clear.png",
     time: "",
+    TempUnit: 'metric'
   },
   mutations: {
     refresh(state, data) {
       state.Location = data.name;
       state.Temp = data.main.temp;
       state.Condition = data.weather[0].main;
-      state.Min = data.main.temp_min;
-      state.Max = data.main.temp_min;
+      state.Min = data.main.temp_min + 5;
+      state.Max = data.main.temp_min - 4;
       state.Humidity = data.main.humidity;
+      state.Feels = data.main.feels_like
       const wid = data.weather[0].id;
       if (wid == 800) {
         state.img = state.time + 'clear' + ".png";
@@ -43,12 +45,21 @@ export default createStore({
     time(state, time) {
       state.time = time;
     },
+    unitC(state) {
+      if (state.TempUnit === 'metric') {
+        state.TempUnit = 'imperial'
+        state.Unit = "°F"
+      } else {
+        state.TempUnit = 'metric'
+        state.Unit = "°C"
+      }
+    }
   },
   actions: {
     // TODO: change the api endpoint to get better results
-    async refresh({ commit }) {
+    async refresh({ commit, getters }) {
       const req = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=Kolkata&appid=5d9088bf2c35e2f94140c53d6c80fb43&units=metric`,
+        `https://api.openweathermap.org/data/2.5/weather?q=Kolkata&appid=5d9088bf2c35e2f94140c53d6c80fb43&units=${getters.unit}`,
         {
           method: "POST",
         }
@@ -60,6 +71,15 @@ export default createStore({
     time({ commit }, time) {
       commit("time", time);
     },
+    unitC({commit}) {
+      commit('unitC')
+      this.dispatch('refresh');
+    }
+  },
+  getters: {
+    unit(state) {
+      return state.TempUnit
+    }
   },
   modules: {},
 });
